@@ -120,6 +120,14 @@ def notify_completions(data_path="data.json", state_path=".notified.json"):
 if __name__ == "__main__":
     if "--chatid" in sys.argv:
         show_chats()
+    elif "--prime" in sys.argv:
+        # mark every current completion as already-notified WITHOUT sending — run once at
+        # setup so the recurring job only pings on completions that happen AFTER now.
+        data = json.load(open("data.json"))
+        keys = {key(s) for dv in data.get("drivers", []) for s in dv.get("route", [])
+                if s.get("cls") == "delivery" and s.get("status") == "completed"}
+        json.dump(sorted(keys), open(".notified.json", "w"))
+        print(f"[tg] primed {len(keys)} existing completion(s) as notified (no send)")
     elif "--test" in sys.argv:
         sample = {"name": "SAMPLE — Bruno's Kitchen", "addr": "123 Euclid Ave, Cleveland, OH",
                   "delivered": "10:42 AM", "arrived": "10:38 AM", "load": 14, "timing": "ontime",
