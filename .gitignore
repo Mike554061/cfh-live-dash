@@ -1,0 +1,7 @@
+# never commit secrets or real operational data
+.env
+*.token
+.notified.json
+pod/
+# the private real-data feed overwrites data.json locally; the repo keeps the demo copy.
+# If you intentionally publish real data, force-add it. Otherwise leave this note in place.

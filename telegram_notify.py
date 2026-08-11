@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""
+Telegram delivery-completed notifications for the CFH live dashboard.
+
+Runs right after each pull (webhook- or cron-driven). It diffs the freshly-built
+data.json against a small state file and fires ONE Telegram message per newly
+completed stop — account name, service time, driver arrival, driver name — with the
+proof-of-delivery photo attached when present. The full POD photo + signature always
+live on the dashboard; the Telegram ping is the lightweight heads-up.
+
+CONFIG (env; token never committed):
+  export TELEGRAM_BOT_TOKEN='123456:ABC...'      # from @BotFather (or reuse an existing bot)
+  export TELEGRAM_CHAT_ID='11122233'             # recipient (Mike now; CFH contact later)
+  export DASH_URL='https://mike554061.github.io/cfh-live-dash'   # optional deep link
+
+USAGE:
+  python3 telegram_notify.py                     # notify new completions in data.json
+  python3 telegram_notify.py --test              # send a sample message and exit
+"""
+import json, os, sys, urllib.parse, urllib.request, mimetypes
+
+TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+DASH_URL = os.environ.get("DASH_URL", "")
+API = "https://api.telegram.org"
+
+def _post(method, fields, files=None):
+    """Multipart POST to the Telegram Bot API (no external deps)."""
+    url = f"{API}/bot{TOKEN}/{method}"
+    boundary = "----cfhboundary7f3a9"
+    body = b""
+    for k, v in fields.items():
+        body += (f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"\r\n\r\n{v}\r\n").encode()
+    for k, path in (files or {}).items():
+        fn = os.path.basename(path)
+        ctype = mimetypes.guess_type(path)[0] or "application/octet-stream"
+        with open(path, "rb") as f:
+            data = f.read()
+        body += (f"--{boundary}\r\nContent-Disposition: form-data; name=\"{k}\"; filename=\"{fn}\"\r\n"
+                 f"Content-Type: {ctype}\r\n\r\n").encode() + data + b"\r\n"
+    body += f"--{boundary}--\r\n".encode()
+    req = urllib.request.Request(url, data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read())
+
+def send(text, photo_path=None):
+    if not TOKEN or not CHAT_ID:
+        sys.stderr.write("[tg] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping send.\n")
+        return None
+    try:
+        if photo_path and os.path.exists(photo_path):
+            return _post("sendPhoto", {"chat_id": CHAT_ID, "caption": text, "parse_mode": "HTML"},
+                         files={"photo": photo_path})
+        return _post("sendMessage", {"chat_id": CHAT_ID, "text": text,
+                     "parse_mode": "HTML", "disable_web_page_preview": "false"})
+    except Exception as e:
+        sys.stderr.write(f"[tg] send failed: {e}\n")
+        return None
+
+def completion_msg(stop, driver_name):
+    lines = ["<b>✅ Delivery Completed — CFH</b>", ""]
+    lines.append(f"🏢 <b>{stop.get('name','(account)')}</b>")
+    if stop.get("addr"): lines.append(f"📍 {stop['addr']}")
+    lines.append(f"🕒 Service: <b>{stop.get('delivered') or stop.get('arrived') or '—'}</b>")
+    if stop.get("arrived"): lines.append(f"🚪 Arrived: {stop['arrived']}")
+    lines.append(f"🚚 Driver: <b>{driver_name}</b>")
+    if stop.get("load") not in (None, ""): lines.append(f"📦 Load: {stop['load']} cases")
+    if stop.get("timing") == "late": lines.append("⚠️ Delivered outside the time window")
+    if stop.get("pod") and stop["pod"].get("signature"): lines.append("✍️ Signature captured")
+    if DASH_URL: lines.append(f"\n🗺️ <a href=\"{DASH_URL}\">Open live dashboard</a>")
+    return "\n".join(lines)
+
+def key(stop):
+    return str(stop.get("order_no") or f"{stop.get('name')}|{stop.get('lat')}|{stop.get('seq')}")
+
+def notify_completions(data_path="data.json", state_path=".notified.json"):
+    data = json.load(open(data_path))
+    try: notified = set(json.load(open(state_path)))
+    except Exception: notified = set()
+    sent = 0
+    for dv in data.get("drivers", []):
+        for s in dv.get("route", []):
+            if s.get("cls") != "delivery" or s.get("status") != "completed":
+                continue
+            k = key(s)
+            if k in notified:
+                continue
+            photo = s.get("pod", {}).get("photo") if s.get("pod") else None
+            # only attach a locally-downloaded file, not a remote/placeholder url
+            photo = photo if (photo and os.path.exists(photo)) else None
+            if send(completion_msg(s, dv.get("name", "Driver")), photo) is not None:
+                notified.add(k); sent += 1
+    json.dump(sorted(notified), open(state_path, "w"))
+    print(f"[tg] notified {sent} new completion(s); {len(notified)} total tracked")
+    return sent
+
+if __name__ == "__main__":
+    if "--test" in sys.argv:
+        sample = {"name": "SAMPLE — Bruno's Kitchen", "addr": "123 Euclid Ave, Cleveland, OH",
+                  "delivered": "10:42 AM", "arrived": "10:38 AM", "load": 14, "timing": "ontime",
+                  "pod": {"signature": True}}
+        print(send(completion_msg(sample, "Chris Puskar")))
+    else:
+        notify_completions()

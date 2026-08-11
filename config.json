@@ -1,0 +1,24 @@
+{
+  "_comment": "CFH live dashboard config. Public build ships synthetic demo data. Real CFH data runs privately via routific_pull.py (ROUTIFIC_ROUTE_FILTER=CFH) on Mike's machine.",
+
+  "brand": {
+    "operatorName": "SupplyNow",
+    "operatorLogo": "",
+    "appTitle": "CFH Live Delivery Tracking",
+    "poweredBy": "Powered by SupplyNow 3PL"
+  },
+  "subBrand": {
+    "enabled": true,
+    "customerName": "CFH",
+    "customerLogo": "",
+    "tagline": "Where is my delivery right now?"
+  },
+  "theme": {
+    "primary": "#0ea5e9", "accent": "#22d3ee", "bg": "#070b14", "panel": "#0d1424",
+    "text": "#e6edf6", "ok": "#34d399", "warn": "#f5e642", "late": "#fb7185", "muted": "#64748b"
+  },
+  "map": { "defaultMode": "satellite", "pitch": 50, "bearing": -14, "zoom": 11.2 },
+  "features": { "showPodPhotos": true, "showOcrOnHover": false, "showDriverKpis": true, "showStopList": true, "autoRefreshSeconds": 30 },
+  "drivers": { "overrides": {} },
+  "data": { "source": "data.json", "sourceCsv": "" }
+}

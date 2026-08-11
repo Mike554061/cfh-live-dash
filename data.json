@@ -1,0 +1,383 @@
+{
+  "generatedAt": "DEMO \u2014 synthetic data",
+  "market": "CFH (Cleveland + Akron)",
+  "depot": {
+    "lat": 41.4993,
+    "lng": -81.6944,
+    "name": "SupplyNow Cleveland Depot"
+  },
+  "drivers": [
+    {
+      "id": "drv-cle",
+      "name": "Cleveland Driver",
+      "phone": "",
+      "vehicle": "CFH Driver (Cleveland, OH)",
+      "color": "#22d3ee",
+      "active": true,
+      "route": [
+        {
+          "seq": 1,
+          "cls": "delivery",
+          "name": "Lakeside Cafe Co (demo)",
+          "addr": "1200 W 9th St, Cleveland, OH",
+          "lat": 41.5031,
+          "lng": -81.679,
+          "status": "completed",
+          "arrived": "8:09 AM",
+          "eta": null,
+          "win_start": "7:30 AM",
+          "win_end": "9:00 AM",
+          "order_total": null,
+          "load": 16,
+          "order_no": "CFH-DEMO-1041",
+          "packages": 3,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": "8:12 AM",
+          "dist_mi": 4.2,
+          "dwell_min": 12,
+          "drive_min": 18,
+          "timing": "ontime",
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": {
+            "photo": "",
+            "signature": true,
+            "notes": "",
+            "items": [],
+            "ocrConfidence": null,
+            "ocrRaw": ""
+          }
+        },
+        {
+          "seq": 2,
+          "cls": "delivery",
+          "name": "Ohio City Provisions (demo)",
+          "addr": "2700 Bridge Ave, Cleveland, OH",
+          "lat": 41.4849,
+          "lng": -81.702,
+          "status": "completed",
+          "arrived": "8:47 AM",
+          "eta": null,
+          "win_start": "8:00 AM",
+          "win_end": "9:30 AM",
+          "order_total": null,
+          "load": 22,
+          "order_no": "CFH-DEMO-1042",
+          "packages": 5,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": "8:51 AM",
+          "dist_mi": 2.1,
+          "dwell_min": 15,
+          "drive_min": 9,
+          "timing": "ontime",
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": {
+            "photo": "",
+            "signature": true,
+            "notes": "",
+            "items": [],
+            "ocrConfidence": null,
+            "ocrRaw": ""
+          }
+        },
+        {
+          "seq": 3,
+          "cls": "delivery",
+          "name": "Tremont Table (demo)",
+          "addr": "2450 Professor Ave, Cleveland, OH",
+          "lat": 41.4772,
+          "lng": -81.6905,
+          "status": "enroute",
+          "arrived": null,
+          "eta": "10:20 AM",
+          "win_start": "9:30 AM",
+          "win_end": "11:00 AM",
+          "order_total": null,
+          "load": 11,
+          "order_no": "CFH-DEMO-1043",
+          "packages": 2,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": null,
+          "dist_mi": 1.6,
+          "dwell_min": null,
+          "drive_min": 8,
+          "timing": null,
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": null
+        },
+        {
+          "seq": 4,
+          "cls": "delivery",
+          "name": "University Circle Kitchen (demo)",
+          "addr": "11150 East Blvd, Cleveland, OH",
+          "lat": 41.5075,
+          "lng": -81.6083,
+          "status": "pending",
+          "arrived": null,
+          "eta": "11:05 AM",
+          "win_start": "10:30 AM",
+          "win_end": "12:00 PM",
+          "order_total": null,
+          "load": 18,
+          "order_no": "CFH-DEMO-1044",
+          "packages": 4,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": null,
+          "dist_mi": 6.9,
+          "dwell_min": null,
+          "drive_min": null,
+          "timing": null,
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": null
+        },
+        {
+          "seq": 5,
+          "cls": "delivery",
+          "name": "Shaker Market Hall (demo)",
+          "addr": "20100 Chagrin Blvd, Shaker Heights, OH",
+          "lat": 41.4736,
+          "lng": -81.5512,
+          "status": "pending",
+          "arrived": null,
+          "eta": "11:52 AM",
+          "win_start": "11:00 AM",
+          "win_end": "1:00 PM",
+          "order_total": null,
+          "load": 9,
+          "order_no": "CFH-DEMO-1045",
+          "packages": 2,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": null,
+          "dist_mi": 5.3,
+          "dwell_min": null,
+          "drive_min": null,
+          "timing": null,
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": null
+        }
+      ],
+      "miles": 32.4,
+      "work_min": 268,
+      "orders_count": 5,
+      "live": {
+        "lat": 41.4849,
+        "lng": -81.702,
+        "heading": 90,
+        "speed": 0,
+        "status": "enroute",
+        "estimated": true,
+        "updatedAt": "10:12 AM"
+      }
+    },
+    {
+      "id": "drv-akr",
+      "name": "Akron Driver",
+      "phone": "",
+      "vehicle": "CFH Driver (Akron, OH)",
+      "color": "#a78bfa",
+      "active": true,
+      "route": [
+        {
+          "seq": 1,
+          "cls": "delivery",
+          "name": "Highland Square Deli (demo)",
+          "addr": "780 W Market St, Akron, OH",
+          "lat": 41.0812,
+          "lng": -81.5391,
+          "status": "completed",
+          "arrived": "8:30 AM",
+          "eta": null,
+          "win_start": "8:00 AM",
+          "win_end": "9:30 AM",
+          "order_total": null,
+          "load": 13,
+          "order_no": "CFH-DEMO-2071",
+          "packages": 3,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": "8:33 AM",
+          "dist_mi": 7.4,
+          "dwell_min": 14,
+          "drive_min": 22,
+          "timing": "ontime",
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": {
+            "photo": "",
+            "signature": true,
+            "notes": "",
+            "items": [],
+            "ocrConfidence": null,
+            "ocrRaw": ""
+          }
+        },
+        {
+          "seq": 2,
+          "cls": "delivery",
+          "name": "Merriman Valley Grill (demo)",
+          "addr": "1662 Merriman Rd, Akron, OH",
+          "lat": 41.1069,
+          "lng": -81.5637,
+          "status": "completed",
+          "arrived": "9:12 AM",
+          "eta": null,
+          "win_start": "8:30 AM",
+          "win_end": "9:00 AM",
+          "order_total": null,
+          "load": 20,
+          "order_no": "CFH-DEMO-2072",
+          "packages": 4,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": "9:28 AM",
+          "dist_mi": 3.1,
+          "dwell_min": 16,
+          "drive_min": 11,
+          "timing": "late",
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": {
+            "photo": "",
+            "signature": true,
+            "notes": "",
+            "items": [],
+            "ocrConfidence": null,
+            "ocrRaw": ""
+          }
+        },
+        {
+          "seq": 3,
+          "cls": "delivery",
+          "name": "Cuyahoga Falls Bistro (demo)",
+          "addr": "2085 Front St, Cuyahoga Falls, OH",
+          "lat": 41.1339,
+          "lng": -81.4846,
+          "status": "enroute",
+          "arrived": null,
+          "eta": "10:40 AM",
+          "win_start": "10:00 AM",
+          "win_end": "11:30 AM",
+          "order_total": null,
+          "load": 15,
+          "order_no": "CFH-DEMO-2073",
+          "packages": 3,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": null,
+          "dist_mi": 6.0,
+          "dwell_min": null,
+          "drive_min": 17,
+          "timing": null,
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": null
+        },
+        {
+          "seq": 4,
+          "cls": "delivery",
+          "name": "Fairlawn Fresh (demo)",
+          "addr": "3750 W Market St, Fairlawn, OH",
+          "lat": 41.1289,
+          "lng": -81.6193,
+          "status": "pending",
+          "arrived": null,
+          "eta": "11:34 AM",
+          "win_start": "11:00 AM",
+          "win_end": "1:00 PM",
+          "order_total": null,
+          "load": 12,
+          "order_no": "CFH-DEMO-2074",
+          "packages": 2,
+          "tags": [
+            "CFH"
+          ],
+          "delivered": null,
+          "dist_mi": 8.8,
+          "dwell_min": null,
+          "drive_min": null,
+          "timing": null,
+          "missed_reason": null,
+          "geo_ok": true,
+          "pod": null
+        }
+      ],
+      "miles": 41.7,
+      "work_min": 231,
+      "orders_count": 4,
+      "live": {
+        "lat": 41.1069,
+        "lng": -81.5637,
+        "heading": 90,
+        "speed": 0,
+        "status": "enroute",
+        "estimated": true,
+        "updatedAt": "10:12 AM"
+      }
+    }
+  ],
+  "heat": [
+    {
+      "lat": 41.5031,
+      "lng": -81.679,
+      "weight": 0.64
+    },
+    {
+      "lat": 41.4849,
+      "lng": -81.702,
+      "weight": 0.88
+    },
+    {
+      "lat": 41.4772,
+      "lng": -81.6905,
+      "weight": 0.44
+    },
+    {
+      "lat": 41.5075,
+      "lng": -81.6083,
+      "weight": 0.72
+    },
+    {
+      "lat": 41.4736,
+      "lng": -81.5512,
+      "weight": 0.36
+    },
+    {
+      "lat": 41.0812,
+      "lng": -81.5391,
+      "weight": 0.52
+    },
+    {
+      "lat": 41.1069,
+      "lng": -81.5637,
+      "weight": 0.8
+    },
+    {
+      "lat": 41.1339,
+      "lng": -81.4846,
+      "weight": 0.6
+    },
+    {
+      "lat": 41.1289,
+      "lng": -81.6193,
+      "weight": 0.48
+    }
+  ],
+  "source": "cfh-demo"
+}
