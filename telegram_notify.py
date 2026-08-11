@@ -21,6 +21,7 @@ import json, os, sys, urllib.parse, urllib.request, mimetypes
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+THREAD_ID = os.environ.get("TELEGRAM_THREAD_ID", "")   # optional: one topic thread in a group
 DASH_URL = os.environ.get("DASH_URL", "")
 API = "https://api.telegram.org"
 
@@ -48,15 +49,36 @@ def send(text, photo_path=None):
     if not TOKEN or not CHAT_ID:
         sys.stderr.write("[tg] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping send.\n")
         return None
+    base = {"chat_id": CHAT_ID, "parse_mode": "HTML"}
+    if THREAD_ID:
+        base["message_thread_id"] = THREAD_ID   # all CFH pings land in one topic thread
     try:
         if photo_path and os.path.exists(photo_path):
-            return _post("sendPhoto", {"chat_id": CHAT_ID, "caption": text, "parse_mode": "HTML"},
-                         files={"photo": photo_path})
-        return _post("sendMessage", {"chat_id": CHAT_ID, "text": text,
-                     "parse_mode": "HTML", "disable_web_page_preview": "false"})
+            return _post("sendPhoto", {**base, "caption": text}, files={"photo": photo_path})
+        return _post("sendMessage", {**base, "text": text, "disable_web_page_preview": "false"})
     except Exception as e:
         sys.stderr.write(f"[tg] send failed: {e}\n")
         return None
+
+def show_chats():
+    """List chats/threads the bot can see (message the bot or add it to the CFH group first),
+    so you can grab TELEGRAM_CHAT_ID (and message_thread_id for a topic)."""
+    try:
+        with urllib.request.urlopen(f"{API}/bot{TOKEN}/getUpdates", timeout=20) as r:
+            ups = json.loads(r.read()).get("result", [])
+    except Exception as e:
+        return print(f"[tg] getUpdates failed: {e}")
+    seen = {}
+    for u in ups:
+        m = u.get("message") or u.get("channel_post") or {}
+        c = m.get("chat") or {}
+        if c.get("id") is not None:
+            seen[c["id"]] = (c.get("title") or c.get("username") or c.get("first_name") or "?",
+                             c.get("type"), m.get("message_thread_id"))
+    if not seen:
+        return print("[tg] no chats yet — DM the bot (or add it to the CFH group and post once), then rerun.")
+    for cid, (title, ctype, thread) in seen.items():
+        print(f"  chat_id={cid}  type={ctype}  thread_id={thread}  «{title}»")
 
 def completion_msg(stop, driver_name):
     lines = ["<b>✅ Delivery Completed — CFH</b>", ""]
@@ -96,7 +118,9 @@ def notify_completions(data_path="data.json", state_path=".notified.json"):
     return sent
 
 if __name__ == "__main__":
-    if "--test" in sys.argv:
+    if "--chatid" in sys.argv:
+        show_chats()
+    elif "--test" in sys.argv:
         sample = {"name": "SAMPLE — Bruno's Kitchen", "addr": "123 Euclid Ave, Cleveland, OH",
                   "delivered": "10:42 AM", "arrived": "10:38 AM", "load": 14, "timing": "ontime",
                   "pod": {"signature": True}}
