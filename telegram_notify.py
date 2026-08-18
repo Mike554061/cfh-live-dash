@@ -21,6 +21,7 @@ import json, os, sys, urllib.parse, urllib.request, mimetypes
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+CHAT_IDS = [c.strip() for c in CHAT_ID.split(",") if c.strip()]   # comma-separated = multiple recipients
 THREAD_ID = os.environ.get("TELEGRAM_THREAD_ID", "")   # optional: one topic thread in a group
 DASH_URL = os.environ.get("DASH_URL", "")
 API = "https://api.telegram.org"
@@ -46,19 +47,23 @@ def _post(method, fields, files=None):
         return json.loads(r.read())
 
 def send(text, photo_path=None):
-    if not TOKEN or not CHAT_ID:
+    if not TOKEN or not CHAT_IDS:
         sys.stderr.write("[tg] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping send.\n")
         return None
-    base = {"chat_id": CHAT_ID, "parse_mode": "HTML"}
-    if THREAD_ID:
-        base["message_thread_id"] = THREAD_ID   # all CFH pings land in one topic thread
-    try:
-        if photo_path and os.path.exists(photo_path):
-            return _post("sendPhoto", {**base, "caption": text}, files={"photo": photo_path})
-        return _post("sendMessage", {**base, "text": text, "disable_web_page_preview": "false"})
-    except Exception as e:
-        sys.stderr.write(f"[tg] send failed: {e}\n")
-        return None
+    ok = None
+    for cid in CHAT_IDS:                          # deliver to every recipient
+        base = {"chat_id": cid, "parse_mode": "HTML"}
+        if THREAD_ID:
+            base["message_thread_id"] = THREAD_ID
+        try:
+            if photo_path and os.path.exists(photo_path):
+                r = _post("sendPhoto", {**base, "caption": text}, files={"photo": photo_path})
+            else:
+                r = _post("sendMessage", {**base, "text": text, "disable_web_page_preview": "false"})
+            ok = ok or r
+        except Exception as e:
+            sys.stderr.write(f"[tg] send to {cid} failed: {e}\n")
+    return ok
 
 def show_chats():
     """List chats/threads the bot can see (message the bot or add it to the CFH group first),
