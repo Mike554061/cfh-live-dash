@@ -81,16 +81,13 @@ def show_chats():
         print(f"  chat_id={cid}  type={ctype}  thread_id={thread}  «{title}»")
 
 def completion_msg(stop, driver_name):
+    win = f"{stop['win_start']} - {stop['win_end']}" if (stop.get('win_start') and stop.get('win_end')) else "—"
     lines = ["<b>✅ Delivery Completed — CFH</b>", ""]
-    lines.append(f"🏢 <b>{stop.get('name','(account)')}</b>")
-    if stop.get("addr"): lines.append(f"📍 {stop['addr']}")
-    lines.append(f"🕒 Service: <b>{stop.get('delivered') or stop.get('arrived') or '—'}</b>")
-    if stop.get("arrived"): lines.append(f"🚪 Arrived: {stop['arrived']}")
+    lines.append(f"🏢 Stop: <b>{stop.get('name','(account)')}</b>")
+    lines.append(f"🕒 Service: {win}")
     lines.append(f"🚚 Driver: <b>{driver_name}</b>")
-    if stop.get("load") not in (None, ""): lines.append(f"📦 Load: {stop['load']} cases")
-    if stop.get("timing") == "late": lines.append("⚠️ Delivered outside the time window")
-    if stop.get("pod") and stop["pod"].get("signature"): lines.append("✍️ Signature captured")
-    if DASH_URL: lines.append(f"\n🗺️ <a href=\"{DASH_URL}\">Open live dashboard</a>")
+    if DASH_URL:
+        lines.append(f'\n🗺️ <a href="{DASH_URL}">Open live dashboard</a>')
     return "\n".join(lines)
 
 def key(stop):
@@ -105,13 +102,13 @@ def notify_completions(data_path="data.json", state_path=".notified.json"):
         for s in dv.get("route", []):
             if s.get("cls") != "delivery" or s.get("status") != "completed":
                 continue
+            # skip order-less depot legs — only notify real deliveries with a location
+            if not (s.get("order_no") or (s.get("name") and s["name"] not in ("Stop", "Depot"))):
+                continue
             k = key(s)
             if k in notified:
                 continue
-            photo = s.get("pod", {}).get("photo") if s.get("pod") else None
-            # only attach a locally-downloaded file, not a remote/placeholder url
-            photo = photo if (photo and os.path.exists(photo)) else None
-            if send(completion_msg(s, dv.get("name", "Driver")), photo) is not None:
+            if send(completion_msg(s, dv.get("name", "Driver"))) is not None:
                 notified.add(k); sent += 1
     json.dump(sorted(notified), open(state_path, "w"))
     print(f"[tg] notified {sent} new completion(s); {len(notified)} total tracked")
@@ -129,9 +126,7 @@ if __name__ == "__main__":
         json.dump(sorted(keys), open(".notified.json", "w"))
         print(f"[tg] primed {len(keys)} existing completion(s) as notified (no send)")
     elif "--test" in sys.argv:
-        sample = {"name": "SAMPLE — Bruno's Kitchen", "addr": "123 Euclid Ave, Cleveland, OH",
-                  "delivered": "10:42 AM", "arrived": "10:38 AM", "load": 14, "timing": "ontime",
-                  "pod": {"signature": True}}
+        sample = {"name": "SAMPLE — Bruno's Kitchen", "win_start": "9:00 AM", "win_end": "12:00 PM"}
         print(send(completion_msg(sample, "Chris Puskar")))
     else:
         notify_completions()
